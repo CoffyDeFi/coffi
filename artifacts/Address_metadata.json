@@ -1,0 +1,46 @@
+{
+	"compiler": {
+		"version": "0.8.25+commit.b61c2a91"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"details": "Collection of functions related to the address type",
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"CoffyToken.sol": "Address"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"CoffyToken.sol": {
+			"keccak256": "0xcf43399b6d39acb78d5331c70a10ad51c47494e996edeb8830200a314ec498c6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://52643689b339f39e546fcd6b997e39f60a92afa6bc627a7597c3c9545e77f534",
+				"dweb:/ipfs/QmWyyktRbHTkLtK7vH2Pap7TFHFBjttG47DaHuZkKB8NRU"
+			]
+		}
+	},
+	"version": 1
+}
