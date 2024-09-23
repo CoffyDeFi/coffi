@@ -197,11 +197,11 @@
 	},
 	"sources": {
 		"CoffyToken.sol": {
-			"keccak256": "0x6eef70ddcea5f444e52797befeec5e5f1c34e1a73bca4411af3239965e8b0ed1",
+			"keccak256": "0x55b89a2e32de58481d208bf96ad12bda8fb7aaddfcd6ea5760ca38baa583789d",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://96d258a70388d70f91f681d1475f5b332d3b4a2456f2bfff67eab26d423d8e15",
-				"dweb:/ipfs/QmWRT8gHdoxAXURsri8uFBSR7E4J1XQ2tqkx6AdysdSuEa"
+				"bzz-raw://dfc1abd572c1c2fddc832c7eb8ea33c97620f166d65daf3bd2d91f03373ca8ee",
+				"dweb:/ipfs/QmVmsXPH9iqipDods9g8Pp35Jv4w5NiPsmBRE4M8UmFsis"
 			]
 		}
 	},

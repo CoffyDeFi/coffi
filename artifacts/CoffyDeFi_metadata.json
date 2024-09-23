@@ -6,38 +6,7 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [
-					{
-						"internalType": "string",
-						"name": "name_",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "symbol_",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "totalSupply_",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint8",
-						"name": "decimals_",
-						"type": "uint8"
-					},
-					{
-						"internalType": "address[6]",
-						"name": "addr_",
-						"type": "address[6]"
-					},
-					{
-						"internalType": "uint256[6]",
-						"name": "value_",
-						"type": "uint256[6]"
-					}
-				],
+				"inputs": [],
 				"stateMutability": "payable",
 				"type": "constructor"
 			},
@@ -70,6 +39,234 @@
 				"anonymous": false,
 				"inputs": [
 					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "AuditLog",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "oldBurnFee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newBurnFee",
+						"type": "uint256"
+					}
+				],
+				"name": "BurnFeeUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "oldAddress",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "newAddress",
+						"type": "address"
+					}
+				],
+				"name": "CharityAddressUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "oldCharityFee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newCharityFee",
+						"type": "uint256"
+					}
+				],
+				"name": "CharityFeeUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "oldAddress",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "newAddress",
+						"type": "address"
+					}
+				],
+				"name": "DeveloperAddressUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "oldDeveloperFee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newDeveloperFee",
+						"type": "uint256"
+					}
+				],
+				"name": "DeveloperFeeUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "oldLiquidityPoolFee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newLiquidityPoolFee",
+						"type": "uint256"
+					}
+				],
+				"name": "LiquidityPoolFeeUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "Log",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "oldAddress",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "newAddress",
+						"type": "address"
+					}
+				],
+				"name": "MarketingAddressUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "oldMarketingFee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newMarketingFee",
+						"type": "uint256"
+					}
+				],
+				"name": "MarketingFeeUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "oldMaxTxAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newMaxTxAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "MaxTxAmountUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "oldMinimumTokensBeforeSwap",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newMinimumTokensBeforeSwap",
+						"type": "uint256"
+					}
+				],
+				"name": "MinimumTokensBeforeSwapUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
 						"indexed": true,
 						"internalType": "address",
 						"name": "previousOwner",
@@ -90,12 +287,31 @@
 				"inputs": [
 					{
 						"indexed": false,
+						"internalType": "bool",
+						"name": "presale",
+						"type": "bool"
+					}
+				],
+				"name": "PresaleFlagUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
 						"internalType": "uint256",
-						"name": "tokenAmount",
+						"name": "oldReflectionFee",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newReflectionFee",
 						"type": "uint256"
 					}
 				],
-				"name": "RewardLiquidityProviders",
+				"name": "ReflectionFeeUpdated",
 				"type": "event"
 			},
 			{
@@ -198,6 +414,77 @@
 				],
 				"name": "Transfer",
 				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "recipient",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "TransferFailed",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "MAX_BURN_FEE",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MAX_FEE_INDIVIDUAL",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MAX_TOTAL_FEES",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "MIN_COMBINED_LIQUIDITY_FEE",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
 			},
 			{
 				"inputs": [],
@@ -644,6 +931,31 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "recoverETHfromContract",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_tokenAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "recoverTokensFromContract",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -800,19 +1112,6 @@
 					}
 				],
 				"name": "setMaxTxAmount",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_minimumTokensBeforeSwap",
-						"type": "uint256"
-					}
-				],
-				"name": "setNumTokensSellToAddToLiquidity",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -1067,18 +1366,18 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": false,
+			"enabled": true,
 			"runs": 200
 		},
 		"remappings": []
 	},
 	"sources": {
 		"CoffyToken.sol": {
-			"keccak256": "0x8bca1eb34e1636a263a8b244cdfd66ed9f44a85d66deae6b0c077756b8d5618c",
+			"keccak256": "0x55b89a2e32de58481d208bf96ad12bda8fb7aaddfcd6ea5760ca38baa583789d",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://bd2b920084d33739f283d097fa632c0b3d5fc83ba6f9e0f051017c1af4484cfc",
-				"dweb:/ipfs/QmWePzaSTs4G7DX11LRQBpfqMV1QnNFAkrGcgR5ECL2fAA"
+				"bzz-raw://dfc1abd572c1c2fddc832c7eb8ea33c97620f166d65daf3bd2d91f03373ca8ee",
+				"dweb:/ipfs/QmVmsXPH9iqipDods9g8Pp35Jv4w5NiPsmBRE4M8UmFsis"
 			]
 		}
 	},

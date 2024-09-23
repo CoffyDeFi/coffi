@@ -1183,7 +1183,7 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-contract COFFI is ERC20Burnable, Ownable {
+contract CoffyDeFi is ERC20Burnable, Ownable {
     using Address for address;
 
     mapping(address => uint256) private _rOwned;
