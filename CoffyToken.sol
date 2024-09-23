@@ -425,8 +425,6 @@ abstract contract ERC20Burnable is Context, ERC20 {
     }
 }
 
-// pragma solidity >=0.5.0;
-
 interface IUniswapV2Factory {
     event PairCreated(
         address indexed token0,
@@ -457,8 +455,6 @@ interface IUniswapV2Factory {
 
     function setFeeToSetter(address) external;
 }
-
-// pragma solidity >=0.5.0;
 
 interface IUniswapV2Pair {
     event Approval(
@@ -561,8 +557,6 @@ interface IUniswapV2Pair {
 
     function initialize(address, address) external;
 }
-
-// pragma solidity >=0.6.2;
 
 interface IUniswapV2Router01 {
     function factory() external pure returns (address);
@@ -713,8 +707,6 @@ interface IUniswapV2Router01 {
     ) external view returns (uint256[] memory amounts);
 }
 
-// pragma solidity >=0.6.2;
-
 interface IUniswapV2Router02 is IUniswapV2Router01 {
     function removeLiquidityETHSupportingFeeOnTransferTokens(
         address token,
@@ -778,17 +770,13 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
         payable(0xeD001ebb1A71dc6df6659c4e4Edb070342fd4a1F);
     address payable public developerAddress = 
         payable(0xb5DF28F0d138275c29536400c1452A816911b77A);
-    address payable public charityAddress = 
-        payable(0x2C9BaD149BEF185d6B90daf9857AbA8841f4dC84);
-    address public constant deadAddress =
+    address public immutable deadAddress =
         0x000000000000000000000000000000000000dEaD;
 
     uint256 private constant MAX = ~uint256(0);
     uint256 private _tTotal = 1000000000 ether;
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal = 0;
-
-    uint256 public constant MAX_TOTAL_FEES = 6;
 
     uint256 public _burnFee = 1;
     uint256 private _previousBurnFee = 1;
@@ -804,9 +792,6 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
 
     uint256 public _developerFee = 1;
     uint256 private _previousDeveloperFee = 1;
-
-    uint256 public _charityFee = 0;
-    uint256 private _previousCharityFee = 0;
 
     uint256 private _combinedLiquidityFee = 3;
     uint256 private _previousCombinedLiquidityFee = 3;
@@ -825,12 +810,10 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
     event LiquidityPoolFeeUpdated(uint256 oldLiquidityPoolFee, uint256 newLiquidityPoolFee);
     event MarketingFeeUpdated(uint256 oldMarketingFee, uint256 newMarketingFee);
     event DeveloperFeeUpdated(uint256 oldDeveloperFee, uint256 newDeveloperFee);
-    event CharityFeeUpdated(uint256 oldCharityFee, uint256 newCharityFee);
     event ReflectionFeeUpdated(uint256 oldReflectionFee, uint256 newReflectionFee);
     event MaxTxAmountUpdated(uint256 oldMaxTxAmount, uint256 newMaxTxAmount);
     event MarketingAddressUpdated(address oldAddress, address newAddress);
     event DeveloperAddressUpdated(address oldAddress, address newAddress);
-    event CharityAddressUpdated(address oldAddress, address newAddress);
     event PresaleFlagUpdated(bool presale);
 
     event SwapAndLiquifyEnabledUpdated(bool enabled);
@@ -863,7 +846,6 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
         _isExcludedFromFee[owner()] = true;
         _isExcludedFromFee[marketingAddress] = true;
         _isExcludedFromFee[developerAddress] = true;
-        _isExcludedFromFee[charityAddress] = true;
         _isExcludedFromFee[address(this)] = true;
 
         _mintStart(_msgSender(), _rTotal, _tTotal);
@@ -893,71 +875,56 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
     }
 
     function setBurnFee(uint256 burnFee_) external onlyOwner {
-        uint256 totalFee = 
-            burnFee_ + _reflectionFee + _liquidityPoolFee + 
-            _marketingFee + _developerFee + _charityFee;
-        require(totalFee <= MAX_TOTAL_FEES, "Total fees exceed the 6% limit.");
+        require(
+            burnFee_ + _reflectionFee + _liquidityPoolFee + _marketingFee + _developerFee <= 5,
+            "Total fees exceed the 5% limit."
+        );
         uint256 oldBurnFee = _burnFee;
         _burnFee = burnFee_;
         emit BurnFeeUpdated(oldBurnFee, burnFee_);
     }
 
     function setReflectionFee(uint256 reflectionFee_) public onlyOwner {
-        uint256 totalFee = 
-            _burnFee + reflectionFee_ + _liquidityPoolFee + 
-            _marketingFee + _developerFee + _charityFee;
-        require(totalFee <= MAX_TOTAL_FEES, "Total fees exceed the 6% limit.");
+        require(
+            _burnFee + reflectionFee_ + _liquidityPoolFee + _marketingFee + _developerFee <= 5,
+            "Total fees exceed the 5% limit."
+        );
         uint256 oldReflectionFee = _reflectionFee;
         _reflectionFee = reflectionFee_;
         emit ReflectionFeeUpdated(oldReflectionFee, reflectionFee_);
     }
 
     function setLiquidityPoolFee(uint256 liquidityPoolFee_) external onlyOwner {
-        uint256 totalFee = 
-            _burnFee + _reflectionFee + liquidityPoolFee_ + 
-            _marketingFee + _developerFee + _charityFee;
-        require(totalFee <= MAX_TOTAL_FEES, "Total fees exceed the 6% limit.");
+        require(
+            _burnFee + _reflectionFee + liquidityPoolFee_ + _marketingFee + _developerFee <= 5,
+            "Total fees exceed the 5% limit."
+        );
         uint256 oldLiquidityPoolFee = _liquidityPoolFee;
         _liquidityPoolFee = liquidityPoolFee_;
-        _combinedLiquidityFee =
-            _liquidityPoolFee + _marketingFee + _developerFee + _charityFee;
+        _combinedLiquidityFee = _liquidityPoolFee + _marketingFee + _developerFee;
         emit LiquidityPoolFeeUpdated(oldLiquidityPoolFee, liquidityPoolFee_);
     }
 
     function setMarketingFee(uint256 marketingFee_) external onlyOwner {
-        uint256 totalFee = 
-            _burnFee + _reflectionFee + _liquidityPoolFee + 
-            marketingFee_ + _developerFee + _charityFee;
-        require(totalFee <= MAX_TOTAL_FEES, "Total fees exceed the 6% limit.");
+        require(
+            _burnFee + _reflectionFee + _liquidityPoolFee + marketingFee_ + _developerFee <= 5,
+            "Total fees exceed the 5% limit."
+        );
         uint256 oldMarketingFee = _marketingFee;
         _marketingFee = marketingFee_;
-        _combinedLiquidityFee =
-            _liquidityPoolFee + _marketingFee + _developerFee + _charityFee;
+        _combinedLiquidityFee = _liquidityPoolFee + _marketingFee + _developerFee;
         emit MarketingFeeUpdated(oldMarketingFee, marketingFee_);
     }
 
     function setDeveloperFee(uint256 developerFee_) external onlyOwner {
-        uint256 totalFee = 
-            _burnFee + _reflectionFee + _liquidityPoolFee + 
-            _marketingFee + developerFee_ + _charityFee;
-        require(totalFee <= MAX_TOTAL_FEES, "Total fees exceed the 6% limit.");
+        require(
+            _burnFee + _reflectionFee + _liquidityPoolFee + _marketingFee + developerFee_ <= 5,
+            "Total fees exceed the 6% limit."
+        );
         uint256 oldDeveloperFee = _developerFee;
         _developerFee = developerFee_;
-        _combinedLiquidityFee =
-            _liquidityPoolFee + _marketingFee + _developerFee + _charityFee;
+        _combinedLiquidityFee = _liquidityPoolFee + _marketingFee + _developerFee;
         emit DeveloperFeeUpdated(oldDeveloperFee, developerFee_);
-    }
-
-    function setCharityFee(uint256 charityFee_) external onlyOwner {
-        uint256 totalFee = 
-            _burnFee + _reflectionFee + _liquidityPoolFee + 
-            _marketingFee + _developerFee + charityFee_;
-        require(totalFee <= MAX_TOTAL_FEES, "Total fees exceed the 6% limit.");
-        uint256 oldCharityFee = _charityFee;
-        _charityFee = charityFee_;
-        _combinedLiquidityFee =
-            _liquidityPoolFee + _marketingFee + _developerFee + _charityFee;
-        emit CharityFeeUpdated(oldCharityFee, charityFee_);
     }
 
     function setMarketingAddress(address _marketingAddress) external onlyOwner {
@@ -972,13 +939,6 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
         address oldAddress = developerAddress;
         developerAddress = payable(_developerAddress);
         emit DeveloperAddressUpdated(oldAddress, _developerAddress);
-    }
-
-    function setCharityAddress(address _charityAddress) external onlyOwner {
-        require(_charityAddress != address(0), "Charity address cannot be the zero address");
-        address oldAddress = charityAddress;
-        charityAddress = payable(_charityAddress);
-        emit CharityAddressUpdated(oldAddress, _charityAddress);
     }
 
     function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
@@ -1273,7 +1233,7 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
 
     function swapTokens(uint256 contractTokenBalance) private lockTheSwap {
         if (_combinedLiquidityFee == 0) return;
-        
+
         uint256 initialBalance = address(this).balance;
         uint256 lpTokenBalance = (contractTokenBalance * _liquidityPoolFee) /
             _combinedLiquidityFee;
@@ -1292,11 +1252,6 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
         transferToAddressETH(
             developerAddress,
             ((transferredBalance) * (_developerFee * 10)) /
-                (_combinedLiquidityFee * 10 - ((_liquidityPoolFee * 10) / 2))
-        );
-        transferToAddressETH(
-            charityAddress,
-            ((transferredBalance) * (_charityFee * 10)) /
                 (_combinedLiquidityFee * 10 - ((_liquidityPoolFee * 10) / 2))
         );
 
@@ -1351,7 +1306,6 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
         _previousReflectionFee = _reflectionFee;
         _previousMarketingFee = _marketingFee;
         _previousDeveloperFee = _developerFee;
-        _previousCharityFee = _charityFee;
 
         _combinedLiquidityFee = 0;
         _liquidityPoolFee = 0;
@@ -1359,7 +1313,6 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
         _reflectionFee = 0;
         _marketingFee = 0;
         _developerFee = 0;
-        _charityFee = 0;
     }
 
     function restoreAllFee() private {
@@ -1369,7 +1322,6 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
         _reflectionFee = _previousReflectionFee;
         _marketingFee = _previousMarketingFee;
         _developerFee = _previousDeveloperFee;
-        _charityFee = _previousCharityFee;
     }
 
     function presale(bool _presale) external onlyOwner {
