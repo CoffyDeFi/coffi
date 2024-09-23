@@ -1253,6 +1253,10 @@ contract COFFI is ERC20Burnable, Ownable {
     event ReflectionFeeUpdated(uint256 oldReflectionFee, uint256 newReflectionFee);
     event MinimumTokensBeforeSwapUpdated(uint256 oldMinimumTokensBeforeSwap, uint256 newMinimumTokensBeforeSwap);
     event MaxTxAmountUpdated(uint256 oldMaxTxAmount, uint256 newMaxTxAmount);
+    event MarketingAddressUpdated(address oldAddress, address newAddress);
+    event DeveloperAddressUpdated(address oldAddress, address newAddress);
+    event CharityAddressUpdated(address oldAddress, address newAddress);
+    event PresaleFlagUpdated(bool presale);
 
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndLiquify(
@@ -1267,6 +1271,9 @@ contract COFFI is ERC20Burnable, Ownable {
 
     event TransferFailed(address indexed recipient, uint256 amount);
 
+    event Log(string, uint256);
+    event AuditLog(string, address);
+
     modifier lockTheSwap() {
         inSwapAndLiquify = true;
         _;
@@ -1274,8 +1281,7 @@ contract COFFI is ERC20Burnable, Ownable {
     }
 
     constructor() payable ERC20("Coffy DeFi", "COFFI") {
-        uint256 totalSupply_ = 1000000000;
-        _tTotal = totalSupply_ * 10 ** _decimals;
+        _tTotal = 1000000000 * 10 ** _decimals;
         _rTotal = (MAX - (MAX % _tTotal));
 
         _reflectionFee = 1;
@@ -1299,15 +1305,16 @@ contract COFFI is ERC20Burnable, Ownable {
         _combinedLiquidityFee = _marketingFee + _developerFee + _charityFee + _liquidityPoolFee;
         _previousCombinedLiquidityFee = _combinedLiquidityFee;
 
-        _maxTxAmount = _tTotal;
+        _maxTxAmount = (_tTotal * 5) / 1000;
         _previousMaxTxAmount = _maxTxAmount;
 
-        minimumTokensBeforeSwap = (_tTotal / 10000) * 2;
+        minimumTokensBeforeSwap = (_tTotal * 2) / 10000;
 
-        uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+        uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory())
+            .createPair(address(this), _uniswapV2Router.WETH());
+        uniswapV2Router = _uniswapV2Router;
         _approve(address(this), address(uniswapV2Router), MAX);
-        uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory())
-            .createPair(address(this), uniswapV2Router.WETH());
 
         //exclude owner and this contract from fee
         _isExcludedFromFee[owner()] = true;
@@ -1406,15 +1413,21 @@ contract COFFI is ERC20Burnable, Ownable {
     }
 
     function setMarketingAddress(address _marketingAddress) external onlyOwner {
+        address oldAddress = marketingAddress;
         marketingAddress = payable(_marketingAddress);
+        emit MarketingAddressUpdated(oldAddress, _marketingAddress);
     }
 
     function setDeveloperAddress(address _developerAddress) external onlyOwner {
+        address oldAddress = developerAddress;
         developerAddress = payable(_developerAddress);
+        emit DeveloperAddressUpdated(oldAddress, _developerAddress);
     }
 
     function setCharityAddress(address _charityAddress) external onlyOwner {
+        address oldAddress = charityAddress;
         charityAddress = payable(_charityAddress);
+        emit CharityAddressUpdated(oldAddress, _charityAddress);
     }
 
     function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
@@ -1835,6 +1848,7 @@ contract COFFI is ERC20Burnable, Ownable {
             restoreAllFee();
             _maxTxAmount = _previousMaxTxAmount;
         }
+        emit PresaleFlagUpdated(_presale);
     }
 
     function transferToAddressETH(
@@ -1864,5 +1878,30 @@ contract COFFI is ERC20Burnable, Ownable {
         _tTotal = _tTotal - amount;
         _rTotal = _rTotal - rAmount;
         emit Transfer(account, address(0), amount);
+    }
+
+    // Withdraw ETH that's potentially stuck in the Contract
+    function recoverETHfromContract() external onlyOwner {
+        uint ethBalance = address(this).balance;
+        (bool succ, ) = payable(developerAddress).call{value: ethBalance}("");
+        require(succ, "Transfer failed");
+        emit AuditLog(
+            "We have recovered the stock ETH from contract.",
+            developerAddress
+        );
+    }
+
+    // Withdraw ERC20 tokens that are potentially stuck in Contract
+    function recoverTokensFromContract(
+        address _tokenAddress,
+        uint256 _amount
+    ) external onlyOwner {
+        require(
+            _tokenAddress != address(this),
+            "Owner can't claim contract's balance of its own tokens"
+        );
+        bool success = IERC20(_tokenAddress).transfer(developerAddress, _amount);
+        require(success, "Transfer failed");
+        emit Log("We have recovered tokens from contract:", _amount);
     }
 }

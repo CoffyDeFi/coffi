@@ -40,6 +40,25 @@
 				"inputs": [
 					{
 						"indexed": false,
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "AuditLog",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
 						"internalType": "uint256",
 						"name": "oldBurnFee",
 						"type": "uint256"
@@ -59,6 +78,25 @@
 				"inputs": [
 					{
 						"indexed": false,
+						"internalType": "address",
+						"name": "oldAddress",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "newAddress",
+						"type": "address"
+					}
+				],
+				"name": "CharityAddressUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
 						"internalType": "uint256",
 						"name": "oldCharityFee",
 						"type": "uint256"
@@ -71,6 +109,25 @@
 					}
 				],
 				"name": "CharityFeeUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "oldAddress",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "newAddress",
+						"type": "address"
+					}
+				],
+				"name": "DeveloperAddressUpdated",
 				"type": "event"
 			},
 			{
@@ -109,6 +166,44 @@
 					}
 				],
 				"name": "LiquidityPoolFeeUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "Log",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "oldAddress",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "newAddress",
+						"type": "address"
+					}
+				],
+				"name": "MarketingAddressUpdated",
 				"type": "event"
 			},
 			{
@@ -185,6 +280,19 @@
 					}
 				],
 				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "presale",
+						"type": "bool"
+					}
+				],
+				"name": "PresaleFlagUpdated",
 				"type": "event"
 			},
 			{
@@ -823,6 +931,31 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "recoverETHfromContract",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_tokenAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "recoverTokensFromContract",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -1240,11 +1373,11 @@
 	},
 	"sources": {
 		"CoffyToken.sol": {
-			"keccak256": "0xcf43399b6d39acb78d5331c70a10ad51c47494e996edeb8830200a314ec498c6",
+			"keccak256": "0x13ae0da330a5f5e579fb12e1b93f84862803e44ba33e8ba60a9fdd83c2468880",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://52643689b339f39e546fcd6b997e39f60a92afa6bc627a7597c3c9545e77f534",
-				"dweb:/ipfs/QmWyyktRbHTkLtK7vH2Pap7TFHFBjttG47DaHuZkKB8NRU"
+				"bzz-raw://0e4db7f274013fe329ed5ea36e81f560aacc6bb3f8ad6d5ebcf146ed4e4596fa",
+				"dweb:/ipfs/QmYQDgfLattQ6NN4RkxyJRS4PRoevgFZ3htSUVjxGruaaJ"
 			]
 		}
 	},
