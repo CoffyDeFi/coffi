@@ -1413,18 +1413,21 @@ contract COFFI is ERC20Burnable, Ownable {
     }
 
     function setMarketingAddress(address _marketingAddress) external onlyOwner {
+        require(_marketingAddress != address(0), "Marketing address cannot be the zero address");
         address oldAddress = marketingAddress;
         marketingAddress = payable(_marketingAddress);
         emit MarketingAddressUpdated(oldAddress, _marketingAddress);
     }
 
     function setDeveloperAddress(address _developerAddress) external onlyOwner {
+        require(_developerAddress != address(0), "Developer address cannot be the zero address");
         address oldAddress = developerAddress;
         developerAddress = payable(_developerAddress);
         emit DeveloperAddressUpdated(oldAddress, _developerAddress);
     }
 
     function setCharityAddress(address _charityAddress) external onlyOwner {
+        require(_charityAddress != address(0), "Charity address cannot be the zero address");
         address oldAddress = charityAddress;
         charityAddress = payable(_charityAddress);
         emit CharityAddressUpdated(oldAddress, _charityAddress);
@@ -1734,6 +1737,7 @@ contract COFFI is ERC20Burnable, Ownable {
 
         uint256 liquidityHalf = lpTokenBalance / 2;
         uint256 otherLiquidityHalf = lpTokenBalance - liquidityHalf;
+        
         swapTokensForEth(contractTokenBalance - otherLiquidityHalf);
 
         uint256 transferredBalance = address(this).balance - initialBalance;
@@ -1750,14 +1754,14 @@ contract COFFI is ERC20Burnable, Ownable {
             ((_combinedLiquidityFee * 10) - ((_liquidityPoolFee * 10) / 2));
         addLiquidity(otherLiquidityHalf, liquidityBalance);
 
-        uint256 charityShare = transferredBalance - marketingShare - developerShare - liquidityBalance;
-        transferToAddressETH(charityAddress, charityShare);
-
         emit SwapAndLiquify(
             liquidityHalf,
             liquidityBalance,
             otherLiquidityHalf
         );
+
+        uint256 charityShare = transferredBalance - marketingShare - developerShare - liquidityBalance;
+        transferToAddressETH(charityAddress, charityShare);
     }
 
     function swapTokensForEth(uint256 tokenAmount) private {
