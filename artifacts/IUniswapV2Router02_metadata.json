@@ -985,11 +985,11 @@
 	},
 	"sources": {
 		"CoffyToken.sol": {
-			"keccak256": "0x3d85d2fb639aa51715b10fc46f3dc9d7138f20d6873eebd2de04caa3a59d7951",
+			"keccak256": "0xd27c70708cf2960b601e478f454cf2184e9aee4d1f139331e5370e33ed9b4f71",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1b326a4d47e4ce38b5f8aa9b38e11f77e3abf67a5b24f4956ca51405e8a308c8",
-				"dweb:/ipfs/QmXpchA4p11ja6gNoeaxsaeEXbdqCM1HrTtWQpo4Ey6yhR"
+				"bzz-raw://6ece0745929010323c7fae38a242bff74621768845c4ad409d6b2dec6d0de422",
+				"dweb:/ipfs/QmYExgUDAjRvCzoZRyUBEqppTjmATAi1aSEEhGZB76jJA7"
 			]
 		}
 	},

@@ -796,8 +796,8 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
     uint256 private _combinedLiquidityFee = 3;
     uint256 private _previousCombinedLiquidityFee = 3;
 
-    uint256 public _maxTxAmount = 10000000 ether;
-    uint256 private _previousMaxTxAmount = 10000000 ether;
+    uint256 public _maxTxAmount = 5000000 ether;
+    uint256 private _previousMaxTxAmount = 5000000 ether;
     uint256 private minimumTokensBeforeSwap = 100000 ether;
 
     IUniswapV2Router02 public immutable uniswapV2Router;
@@ -806,29 +806,31 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
     bool inSwapAndLiquify;
     bool public swapAndLiquifyEnabled = true;
 
+    bool public isPresale = false;
+
     event BurnFeeUpdated(uint256 oldBurnFee, uint256 newBurnFee);
     event LiquidityPoolFeeUpdated(uint256 oldLiquidityPoolFee, uint256 newLiquidityPoolFee);
     event MarketingFeeUpdated(uint256 oldMarketingFee, uint256 newMarketingFee);
     event DeveloperFeeUpdated(uint256 oldDeveloperFee, uint256 newDeveloperFee);
     event ReflectionFeeUpdated(uint256 oldReflectionFee, uint256 newReflectionFee);
+    
     event MaxTxAmountUpdated(uint256 oldMaxTxAmount, uint256 newMaxTxAmount);
+    
     event MarketingAddressUpdated(address oldAddress, address newAddress);
     event DeveloperAddressUpdated(address oldAddress, address newAddress);
+    
     event PresaleFlagUpdated(bool presale);
 
     event SwapAndLiquifyEnabledUpdated(bool enabled);
-    event SwapAndLiquify(
-        uint256 tokensSwapped,
-        uint256 ethReceived,
-        uint256 tokensIntoLiqudity
-    );
+    event SwapAndLiquify(uint256 tokensSwapped, uint256 ethReceived, uint256 tokensIntoLiqudity);
+    event SwapAndLiquifyFailed(string message);
 
     event SwapTokensForETH(uint256 amountIn, address[] path);
 
     event TransferFailed(address indexed recipient, uint256 amount);
 
-    event Log(string, uint256);
-    event AuditLog(string, address);
+    event EthRecoveredFromContract(address recoveryAddress, uint256 amount);
+    event TokensRecoveredFromContract(address tokenAddress, address recoveryAddress, uint256 amount);
 
     modifier lockTheSwap() {
         inSwapAndLiquify = true;
@@ -1232,40 +1234,42 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
     }
 
     function swapTokens(uint256 contractTokenBalance) private lockTheSwap {
-        if (_combinedLiquidityFee == 0) return;
+        if (_combinedLiquidityFee > 0) {
+            uint256 initialBalance = address(this).balance;
+            uint256 lpTokenBalance = (contractTokenBalance * _liquidityPoolFee) /
+                _combinedLiquidityFee;
 
-        uint256 initialBalance = address(this).balance;
-        uint256 lpTokenBalance = (contractTokenBalance * _liquidityPoolFee) /
-            _combinedLiquidityFee;
+            uint256 liquidityHalf = lpTokenBalance / 2;
+            uint256 otherLiquidityHalf = lpTokenBalance - liquidityHalf;
+            swapTokensForEth(contractTokenBalance - otherLiquidityHalf);
 
-        uint256 liquidityHalf = lpTokenBalance / 2;
-        uint256 otherLiquidityHalf = lpTokenBalance - liquidityHalf;
-        swapTokensForEth(contractTokenBalance - otherLiquidityHalf);
+            uint256 transferredBalance = address(this).balance - initialBalance;
 
-        uint256 transferredBalance = address(this).balance - initialBalance;
+            transferToAddressETH(
+                marketingAddress,
+                ((transferredBalance) * (_marketingFee * 10)) /
+                    (_combinedLiquidityFee * 10 - ((_liquidityPoolFee * 10) / 2))
+            );
+            transferToAddressETH(
+                developerAddress,
+                ((transferredBalance) * (_developerFee * 10)) /
+                    (_combinedLiquidityFee * 10 - ((_liquidityPoolFee * 10) / 2))
+            );
 
-        transferToAddressETH(
-            marketingAddress,
-            ((transferredBalance) * (_marketingFee * 10)) /
-                (_combinedLiquidityFee * 10 - ((_liquidityPoolFee * 10) / 2))
-        );
-        transferToAddressETH(
-            developerAddress,
-            ((transferredBalance) * (_developerFee * 10)) /
-                (_combinedLiquidityFee * 10 - ((_liquidityPoolFee * 10) / 2))
-        );
+            uint256 liquidityBalance = 
+                ((transferredBalance * _liquidityPoolFee * 10) / 2) /
+                ((_combinedLiquidityFee * 10) - ((_liquidityPoolFee * 10) / 2));
 
-        uint256 liquidityBalance = (transferredBalance *
-            ((_liquidityPoolFee * 10) / 2)) /
-            ((_combinedLiquidityFee * 10) - ((_liquidityPoolFee * 10) / 2));
+            addLiquidity(otherLiquidityHalf, liquidityBalance);
 
-        addLiquidity(otherLiquidityHalf, liquidityBalance);
-
-        emit SwapAndLiquify(
-            liquidityHalf,
-            liquidityBalance,
-            otherLiquidityHalf
-        );
+            emit SwapAndLiquify(
+                liquidityHalf,
+                liquidityBalance,
+                otherLiquidityHalf
+            );
+        } else {
+            emit SwapAndLiquifyFailed("_combinedLiquidityFee is 0, skipping swapAndLiquify.");
+        }
     }
 
     function swapTokensForEth(uint256 tokenAmount) private {
@@ -1325,6 +1329,7 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
     }
 
     function presale(bool _presale) external onlyOwner {
+        require(_presale != isPresale, "Set a different value.");
         if (_presale) {
             setSwapAndLiquifyEnabled(false);
             removeAllFee();
@@ -1335,6 +1340,7 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
             restoreAllFee();
             _maxTxAmount = _previousMaxTxAmount;
         }
+        isPresale = _presale;
         emit PresaleFlagUpdated(_presale);
     }
 
@@ -1371,10 +1377,7 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
         uint ethBalance = address(this).balance;
         (bool succ, ) = payable(developerAddress).call{value: ethBalance}("");
         require(succ, "Transfer failed");
-        emit AuditLog(
-            "We have recovered the stock ETH from contract.",
-            developerAddress
-        );
+        emit EthRecoveredFromContract(developerAddress, ethBalance);
     }
 
     function recoverTokensFromContract(
@@ -1387,6 +1390,6 @@ contract CoffyDeFi is ERC20Burnable, Ownable {
         );
         bool success = IERC20(_tokenAddress).transfer(developerAddress, _amount);
         require(success, "Transfer failed");
-        emit Log("We have recovered tokens from contract:", _amount);
+        emit TokensRecoveredFromContract(_tokenAddress, developerAddress, _amount);
     }
 }
